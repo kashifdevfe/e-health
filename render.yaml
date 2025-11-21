@@ -1,0 +1,12 @@
+# Render Deployment Configuration
+
+## This file tells Render how to build and start your backend service
+
+# Build command
+build: npm install && npx prisma generate && npm run build:server
+
+# Start command  
+start: npx prisma migrate deploy && node dist/index.js
+
+# Environment
+environment: node
