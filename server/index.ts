@@ -40,12 +40,26 @@ app.use(session({
 
 // Auth middleware
 const authenticateToken = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  console.log('Session ID:', req.sessionID);
+  console.log('Session data:', req.session);
+  console.log('Cookies:', req.headers.cookie);
+
   if (!req.session || !req.session.userId) {
     return res.status(401).json({ error: 'Authentication required' });
   }
   (req as any).user = { userId: req.session.userId };
   next();
 };
+
+// Debug endpoint
+app.get('/api/debug/session', (req, res) => {
+  res.json({
+    sessionID: req.sessionID,
+    session: req.session,
+    cookies: req.headers.cookie,
+    userId: req.session?.userId,
+  });
+});
 
 // Auth routes
 app.post('/api/auth/register', async (req, res) => {
