@@ -1,0 +1,323 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String   @map("full_name")
+  userRole  String   @map("user_role") // 'patient' | 'doctor' | 'caregiver'
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  patientDemographics      PatientDemographics?
+  gad7Assessments          GAD7Assessment[]
+  phq9Assessments          PHQ9Assessment[]
+  dass21Assessments        DASS21Assessment[]
+  cvdAssessments           CVDAssessment[]
+  doctorAssignments        DoctorPatientAssignment[] @relation("DoctorAssignments")
+  patientAssignments       DoctorPatientAssignment[] @relation("PatientAssignments")
+  caregiverAssignments     CaregiverPatientAssignment[] @relation("CaregiverAssignments")
+  patientCaregiverAssignments CaregiverPatientAssignment[] @relation("PatientCaregiverAssignments")
+  
+  // New feature relations
+  patientTreatmentPlans    TreatmentPlan[] @relation("PatientTreatmentPlans")
+  doctorTreatmentPlans     TreatmentPlan[] @relation("DoctorTreatmentPlans")
+  id        String   @id @default(uuid())
+  doctorId  String   @map("doctor_id")
+  patientId String   @map("patient_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  doctor  User @relation("DoctorAssignments", fields: [doctorId], references: [id], onDelete: Cascade)
+  patient User @relation("PatientAssignments", fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([doctorId, patientId])
+  @@map("doctor_patient_assignments")
+}
+
+model CaregiverPatientAssignment {
+  id         String   @id @default(uuid())
+  caregiverId String  @map("caregiver_id")
+  patientId  String   @map("patient_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+
+  caregiver User @relation("CaregiverAssignments", fields: [caregiverId], references: [id], onDelete: Cascade)
+  patient   User @relation("PatientCaregiverAssignments", fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([caregiverId, patientId])
+  @@map("caregiver_patient_assignments")
+}
+
+model PatientDemographics {
+  id                    String   @id @default(uuid())
+  userId                String   @unique @map("user_id")
+  fatherHusbandName     String?  @map("father_husband_name")
+  cnic                  String?
+  age                   Int?
+  gender                String?
+  bloodGroup            String?  @map("blood_group")
+  villageTownCity       String?  @map("village_town_city")
+  province              String?
+  height                Float?
+  weight                Float?
+  bloodPressure         String?  @map("blood_pressure")
+  bpMeasurementMethod   String?  @map("bp_measurement_method")
+  diabetesLevel         String?  @map("diabetes_level")
+  diabetesMeasurementMethod String? @map("diabetes_measurement_method")
+  cvdTreatment          Boolean  @default(false) @map("cvd_treatment")
+  hospitalName          String?  @map("hospital_name")
+  doctorName            String?  @map("doctor_name")
+  socioeconomicStatus   String?  @map("socioeconomic_status")
+  education             String?
+  employmentStatus      String?  @map("employment_status")
+  employmentType        String?  @map("employment_type")
+  monthlySalary         Float?   @map("monthly_salary")
+  householdExpenditure  Float?   @map("household_expenditure")
+  healthExpenditure     Float?   @map("health_expenditure")
+  foodExpenditure       Float?   @map("food_expenditure")
+  travellingExpenditure Float?   @map("travelling_expenditure")
+  parentsCousins        Boolean  @default(false) @map("parents_cousins")
+  cousinRelation        String?  @map("cousin_relation")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("patient_demographics")
+}
+
+model GAD7Assessment {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  q1              Int
+  q2              Int
+  q3              Int
+  q4              Int
+  q5              Int
+  q6              Int
+  q7              Int
+  totalScore      Int      @map("total_score")
+  severityLevel   String   @map("severity_level")
+  colorCode       String   @map("color_code")
+  functionalImpact String? @map("functional_impact")
+  completedAt     DateTime @default(now()) @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("gad7_assessments")
+}
+
+model PHQ9Assessment {
+  id              String   @id @default(uuid())
+  userId          String   @map("user_id")
+  q1              Int
+  q2              Int
+  q3              Int
+  q4              Int
+  q5              Int
+  q6              Int
+  q7              Int
+  q8              Int
+  q9              Int
+  totalScore      Int      @map("total_score")
+  severityLevel   String   @map("severity_level")
+  colorCode       String   @map("color_code")
+  functionalImpact String? @map("functional_impact")
+  completedAt     DateTime @default(now()) @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("phq9_assessments")
+}
+
+model DASS21Assessment {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  depressionQ1     Int      @map("depression_q1")
+  depressionQ2     Int      @map("depression_q2")
+  depressionQ3     Int      @map("depression_q3")
+  depressionQ4     Int      @map("depression_q4")
+  depressionQ5     Int      @map("depression_q5")
+  depressionQ6     Int      @map("depression_q6")
+  depressionQ7     Int      @map("depression_q7")
+  anxietyQ1        Int      @map("anxiety_q1")
+  anxietyQ2        Int      @map("anxiety_q2")
+  anxietyQ3        Int      @map("anxiety_q3")
+  anxietyQ4        Int      @map("anxiety_q4")
+  anxietyQ5        Int      @map("anxiety_q5")
+  anxietyQ6        Int      @map("anxiety_q6")
+  anxietyQ7        Int      @map("anxiety_q7")
+  stressQ1         Int      @map("stress_q1")
+  stressQ2         Int      @map("stress_q2")
+  stressQ3         Int      @map("stress_q3")
+  stressQ4         Int      @map("stress_q4")
+  stressQ5         Int      @map("stress_q5")
+  stressQ6         Int      @map("stress_q6")
+  stressQ7         Int      @map("stress_q7")
+  depressionScore  Int      @map("depression_score")
+  anxietyScore     Int      @map("anxiety_score")
+  stressScore      Int      @map("stress_score")
+  depressionSeverity String @map("depression_severity")
+  anxietySeverity  String   @map("anxiety_severity")
+  stressSeverity   String   @map("stress_severity")
+  depressionColor  String   @map("depression_color")
+  anxietyColor     String   @map("anxiety_color")
+  stressColor      String   @map("stress_color")
+  completedAt      DateTime @default(now()) @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("dass21_assessments")
+}
+
+model CVDAssessment {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  q1           String
+  q2           String
+  q3           String
+  q4           String
+  q5           String
+  q6           String
+  q7           String
+  q8           String
+  q9           String
+  q10          String
+  q1Color      String   @map("q1_color")
+  q2Color      String   @map("q2_color")
+  q3Color      String   @map("q3_color")
+  q4Color      String   @map("q4_color")
+  q5Color      String   @map("q5_color")
+  q6Color      String   @map("q6_color")
+  q7Color      String   @map("q7_color")
+  q8Color      String   @map("q8_color")
+  q9Color      String   @map("q9_color")
+  q10Color     String   @map("q10_color")
+  overallRisk  String   @map("overall_risk")
+  overallColor String   @map("overall_color")
+  completedAt  DateTime @default(now()) @map("completed_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("cvd_assessments")
+}
+
+// Treatment Plans
+model TreatmentPlan {
+  id          String    @id @default(uuid())
+  patientId   String    @map("patient_id")
+  doctorId    String    @map("doctor_id")
+  title       String
+  description String
+  goals       String
+  medications String?
+  exercises   String?
+  dietPlan    String?   @map("diet_plan")
+  startDate   DateTime  @map("start_date")
+  endDate     DateTime? @map("end_date")
+  status      String    // 'active', 'completed', 'cancelled'
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  patient User @relation("PatientTreatmentPlans", fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  User @relation("DoctorTreatmentPlans", fields: [doctorId], references: [id], onDelete: Cascade)
+
+  @@map("treatment_plans")
+}
+
+// Medications
+model Medication {
+  id        String    @id @default(uuid())
+  patientId String    @map("patient_id")
+  name      String
+  dosage    String
+  frequency String
+  time      String
+  startDate DateTime  @map("start_date")
+  endDate   DateTime? @map("end_date")
+  notes     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("medications")
+}
+
+// Vital Signs
+model VitalSigns {
+  id            String   @id @default(uuid())
+  patientId     String   @map("patient_id")
+  caregiverId   String   @map("caregiver_id")
+  bloodPressure String?  @map("blood_pressure")
+  heartRate     Int?     @map("heart_rate")
+  temperature   Float?
+  oxygenLevel   Int?     @map("oxygen_level")
+  weight        Float?
+  recordedAt    DateTime @map("recorded_at")
+  notes         String?
+
+  patient   User @relation("PatientVitalSigns", fields: [patientId], references: [id], onDelete: Cascade)
+  caregiver User @relation("CaregiverVitalSigns", fields: [caregiverId], references: [id], onDelete: Cascade)
+
+  @@map("vital_signs")
+}
+
+// Nutrition Logs
+model NutritionLog {
+  id         String   @id @default(uuid())
+  patientId  String   @map("patient_id")
+  mealType   String   @map("meal_type") // 'breakfast', 'lunch', 'dinner', 'snack'
+  foods      String
+  calories   Int?
+  protein    Float?
+  carbs      Float?
+  fats       Float?
+  recordedAt DateTime @map("recorded_at")
+  notes      String?
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("nutrition_logs")
+}
+
+// Exercise Logs
+model ExerciseLog {
+  id             String   @id @default(uuid())
+  patientId      String   @map("patient_id")
+  exerciseType   String   @map("exercise_type")
+  duration       Int      // in minutes
+  intensity      String   // 'low', 'medium', 'high'
+  caloriesBurned Int?     @map("calories_burned")
+  recordedAt     DateTime @map("recorded_at")
+  notes          String?
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("exercise_logs")
+}
+
+// Emergency Alerts
+model EmergencyAlert {
+  id          String    @id @default(uuid())
+  patientId   String    @map("patient_id")
+  alertType   String    @map("alert_type") // 'high_risk_assessment', 'abnormal_vitals', 'manual'
+  severity    String    // 'low', 'medium', 'high', 'critical'
+  description String
+  status      String    // 'active', 'acknowledged', 'resolved'
+  createdAt   DateTime  @default(now()) @map("created_at")
+  resolvedAt  DateTime? @map("resolved_at")
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@map("emergency_alerts")
+}
