@@ -153,7 +153,7 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
 // Patient Demographics routes
 app.get('/api/patient-demographics', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
 
     const demographics = await prisma.patientDemographics.findUnique({
       where: { userId },
@@ -168,7 +168,7 @@ app.get('/api/patient-demographics', authenticateToken, async (req, res) => {
 
 app.post('/api/patient-demographics', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
     const data = req.body;
 
     const demographics = await prisma.patientDemographics.upsert({
@@ -190,7 +190,7 @@ app.post('/api/patient-demographics', authenticateToken, async (req, res) => {
 // Assessment routes
 app.post('/api/assessments/gad7', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
     const data = req.body;
 
     const assessment = await prisma.gAD7Assessment.create({
@@ -209,7 +209,7 @@ app.post('/api/assessments/gad7', authenticateToken, async (req, res) => {
 
 app.get('/api/assessments/gad7', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
 
     const assessments = await prisma.gAD7Assessment.findMany({
       where: { userId },
@@ -225,7 +225,7 @@ app.get('/api/assessments/gad7', authenticateToken, async (req, res) => {
 
 app.post('/api/assessments/phq9', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
     const data = req.body;
 
     const assessment = await prisma.pHQ9Assessment.create({
@@ -244,7 +244,7 @@ app.post('/api/assessments/phq9', authenticateToken, async (req, res) => {
 
 app.get('/api/assessments/phq9', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
 
     const assessments = await prisma.pHQ9Assessment.findMany({
       where: { userId },
@@ -260,7 +260,7 @@ app.get('/api/assessments/phq9', authenticateToken, async (req, res) => {
 
 app.post('/api/assessments/dass21', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
     const data = req.body;
 
     const assessment = await prisma.dASS21Assessment.create({
@@ -279,7 +279,7 @@ app.post('/api/assessments/dass21', authenticateToken, async (req, res) => {
 
 app.get('/api/assessments/dass21', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
 
     const assessments = await prisma.dASS21Assessment.findMany({
       where: { userId },
@@ -295,7 +295,7 @@ app.get('/api/assessments/dass21', authenticateToken, async (req, res) => {
 
 app.post('/api/assessments/cvd', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
     const data = req.body;
 
     const assessment = await prisma.cVDAssessment.create({
@@ -314,7 +314,7 @@ app.post('/api/assessments/cvd', authenticateToken, async (req, res) => {
 
 app.get('/api/assessments/cvd', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
 
     const assessments = await prisma.cVDAssessment.findMany({
       where: { userId },
@@ -331,7 +331,7 @@ app.get('/api/assessments/cvd', authenticateToken, async (req, res) => {
 // Get all assessments for results dashboard
 app.get('/api/assessments/all', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
 
     const [gad7, phq9, dass21, cvd] = await Promise.all([
       prisma.gAD7Assessment.findMany({
@@ -371,7 +371,7 @@ app.get('/api/assessments/all', authenticateToken, async (req, res) => {
 // Get assigned patients for doctors
 app.get('/api/doctor/patients', authenticateToken, async (req, res) => {
   try {
-    const doctorId = req.session!.userId;
+    const doctorId = (req as any).user.userId;
 
     // Verify user is a doctor
     const doctor = await prisma.user.findUnique({
@@ -468,7 +468,7 @@ app.get('/api/doctor/patients', authenticateToken, async (req, res) => {
 // Get assigned patients for caregivers
 app.get('/api/caregiver/patients', authenticateToken, async (req, res) => {
   try {
-    const caregiverId = req.session!.userId;
+    const caregiverId = (req as any).user.userId;
 
     // Verify user is a caregiver
     const caregiver = await prisma.user.findUnique({
@@ -603,7 +603,7 @@ app.get('/api/doctors/available', authenticateToken, async (req, res) => {
 // Book appointment with a doctor
 app.post('/api/appointments/book', authenticateToken, async (req, res) => {
   try {
-    const patientId = req.session!.userId;
+    const patientId = (req as any).user.userId;
     const { doctorId } = req.body;
 
     if (!doctorId) {
@@ -684,7 +684,7 @@ app.get('/api/caregivers/available', authenticateToken, async (req, res) => {
 // Assign caregiver to patient
 app.post('/api/caregivers/assign', authenticateToken, async (req, res) => {
   try {
-    const doctorId = req.session!.userId;
+    const doctorId = (req as any).user.userId;
     const { caregiverId, patientId } = req.body;
 
     if (!caregiverId || !patientId) {
@@ -769,7 +769,7 @@ app.post('/api/caregivers/assign', authenticateToken, async (req, res) => {
 // Create treatment plan
 app.post('/api/treatment-plans', authenticateToken, async (req, res) => {
   try {
-    const doctorId = req.session!.userId!;
+    const doctorId = (req as any).user.userId!;
     const { patientId, title, description, goals, medications, exercises, dietPlan, startDate, endDate } = req.body;
 
     // Verify user is a doctor
@@ -837,7 +837,7 @@ app.post('/api/treatment-plans', authenticateToken, async (req, res) => {
 app.get('/api/treatment-plans/patient/:patientId', authenticateToken, async (req, res) => {
   try {
     const { patientId } = req.params;
-    const userId = req.session!.userId!;
+    const userId = (req as any).user.userId!;
 
     const plans = await prisma.treatmentPlan.findMany({
       where: { patientId },
@@ -863,7 +863,7 @@ app.get('/api/treatment-plans/patient/:patientId', authenticateToken, async (req
 app.put('/api/treatment-plans/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const doctorId = req.session!.userId!;
+    const doctorId = (req as any).user.userId!;
     const updates = req.body;
 
     // Verify the plan belongs to this doctor
@@ -970,7 +970,7 @@ app.delete('/api/medications/:id', authenticateToken, async (req, res) => {
 // Record vital signs
 app.post('/api/vital-signs', authenticateToken, async (req, res) => {
   try {
-    const caregiverId = req.session!.userId!;
+    const caregiverId = (req as any).user.userId!;
     const { patientId, bloodPressure, heartRate, temperature, oxygenLevel, weight, recordedAt, notes } = req.body;
 
     const vitalSigns = await prisma.vitalSigns.create({
@@ -1171,7 +1171,7 @@ app.post('/api/emergency-alerts', authenticateToken, async (req, res) => {
 // Get emergency alerts
 app.get('/api/emergency-alerts', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId!;
+    const userId = (req as any).user.userId!;
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -1265,7 +1265,7 @@ app.put('/api/emergency-alerts/:id', authenticateToken, async (req, res) => {
 // Get doctor analytics
 app.get('/api/analytics/doctor', authenticateToken, async (req, res) => {
   try {
-    const doctorId = req.session!.userId!;
+    const doctorId = (req as any).user.userId!;
 
     // Get all patients assigned to this doctor
     const assignments = await prisma.doctorPatientAssignment.findMany({
