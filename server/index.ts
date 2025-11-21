@@ -1342,6 +1342,22 @@ app.get('/api/analytics/doctor', authenticateToken, async (req, res) => {
   }
 });
 
+// Import progress tracking endpoints
+import {
+  getAssessmentHistory,
+  getPatientTreatmentPlans,
+  getPatientCareActivities,
+  getDoctorPatientProgress,
+  getCaregiverPatientProgress,
+} from './progressEndpoints';
+
+// Patient progress tracking routes
+app.get('/api/patient/assessment-history', authenticateToken, getAssessmentHistory);
+app.get('/api/patient/treatment-plans', authenticateToken, getPatientTreatmentPlans);
+app.get('/api/patient/care-activities', authenticateToken, getPatientCareActivities);
+app.get('/api/doctor/patient/:patientId/progress', authenticateToken, getDoctorPatientProgress);
+app.get('/api/caregiver/patient/:patientId/progress', authenticateToken, getCaregiverPatientProgress);
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
