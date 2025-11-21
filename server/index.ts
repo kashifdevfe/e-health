@@ -14,6 +14,7 @@ app.use(cors({
     'http://localhost:5173',
     'https://e-health-production.up.railway.app',
     'https://e-health-iota.vercel.app',
+    'https://e-health-sage.vercel.app',
   ],
   credentials: true,
 }));
