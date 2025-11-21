@@ -8,7 +8,7 @@
     "dev:server": "tsx watch server/index.ts",
     "dev:client": "vite",
     "build": "vite build",
-    "prestart": "prisma migrate deploy",
+    "prestart": "prisma db push --accept-data-loss",
     "start": "tsx server/index.ts",
     "postinstall": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
