@@ -5,54 +5,79 @@ export interface ApiError {
 }
 
 class ApiClient {
+  private getToken(): string | null {
+    return localStorage.getItem('auth_token');
+  }
+
+  private setToken(token: string): void {
+    localStorage.setItem('auth_token', token);
+  }
+
+  private removeToken(): void {
+    localStorage.removeItem('auth_token');
+  }
+
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
   ): Promise<T> {
+    const token = this.getToken();
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       ...options.headers,
     };
 
+    // Add Authorization header if token exists
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
-      credentials: 'include', // Include cookies for session
     });
 
     if (!response.ok) {
       const error: ApiError = await response.json().catch(() => ({
         error: 'An error occurred',
       }));
-      throw new Error(error.error || 'An error occurred');
+      throw new Error(error.error);
     }
 
     return response.json();
   }
 
-  // Auth
+  // Auth methods
   async register(email: string, password: string, fullName: string, role: string) {
-    return this.request<{ user: any }>('/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify({ email, password, fullName, role }),
-    });
+    const response = await this.request<{ user: any; token: string }>(
+      '/api/auth/register',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email, password, fullName, role }),
+      }
+    );
+    this.setToken(response.token);
+    return response;
   }
 
   async login(email: string, password: string) {
-    return this.request<{ user: any }>('/api/auth/login', {
-      method: 'POST',
-      body: JSON.stringify({ email, password }),
-    });
+    const response = await this.request<{ user: any; token: string }>(
+      '/api/auth/login',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      }
+    );
+    this.setToken(response.token);
+    return response;
   }
 
   async getCurrentUser() {
     return this.request<{ user: any }>('/api/auth/me');
   }
 
-  async logout() {
-    await this.request('/api/auth/logout', {
-      method: 'POST',
-    });
+  logout() {
+    this.removeToken();
   }
 
   // Patient Demographics
@@ -264,4 +289,3 @@ class ApiClient {
 }
 
 export const api = new ApiClient();
-

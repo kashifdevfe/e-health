@@ -1,20 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import session from 'express-session';
 import { prisma } from './prisma';
 import bcrypt from 'bcryptjs';
-
-// Extend express-session types
-declare module 'express-session' {
-  interface SessionData {
-    userId?: string;
-  }
-}
+import jwt from 'jsonwebtoken';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const SESSION_SECRET = process.env.SESSION_SECRET || 'your-secret-key-change-in-production';
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'your-jwt-secret-change-in-production';
 
 app.use(cors({
   origin: [
@@ -25,41 +18,24 @@ app.use(cors({
   credentials: true,
 }));
 app.use(bodyParser.json());
-app.use(session({
-  secret: SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-    domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost',
-  },
-}));
 
-// Auth middleware
+// JWT Auth middleware
 const authenticateToken = (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  console.log('Session ID:', req.sessionID);
-  console.log('Session data:', req.session);
-  console.log('Cookies:', req.headers.cookie);
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
-  if (!req.session || !req.session.userId) {
+  if (!token) {
     return res.status(401).json({ error: 'Authentication required' });
   }
-  (req as any).user = { userId: req.session.userId };
-  next();
-};
 
-// Debug endpoint
-app.get('/api/debug/session', (req, res) => {
-  res.json({
-    sessionID: req.sessionID,
-    session: req.session,
-    cookies: req.headers.cookie,
-    userId: req.session?.userId,
-  });
-});
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET) as { userId: string };
+    (req as any).user = { userId: decoded.userId };
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Invalid or expired token' });
+  }
+};
 
 // Auth routes
 app.post('/api/auth/register', async (req, res) => {
@@ -100,10 +76,10 @@ app.post('/api/auth/register', async (req, res) => {
       },
     });
 
-    // Set session
-    req.session!.userId = user.id;
+    // Generate JWT token
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
 
-    res.json({ user });
+    res.json({ user, token });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -134,12 +110,12 @@ app.post('/api/auth/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Set session
-    req.session!.userId = user.id;
+    // Generate JWT token
+    const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '24h' });
 
     const { password: _, ...userWithoutPassword } = user;
 
-    res.json({ user: userWithoutPassword });
+    res.json({ user: userWithoutPassword, token });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -148,7 +124,7 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
-    const userId = req.session!.userId;
+    const userId = (req as any).user.userId;
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -171,16 +147,6 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
     console.error('Get user error:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-});
-
-// Logout route
-app.post('/api/auth/logout', (req, res) => {
-  req.session?.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ error: 'Failed to logout' });
-    }
-    res.json({ message: 'Logged out successfully' });
-  });
 });
 
 // Patient Demographics routes
