@@ -20,7 +20,7 @@ app.use(cors({
   origin: [
     'http://localhost:5173',
     'https://e-health-production.up.railway.app',
-    // Add your Vercel frontend URL after deployment (e.g., 'https://e-health-xyz.vercel.app')
+    'https://e-health-iota.vercel.app',
   ],
   credentials: true,
 }));
