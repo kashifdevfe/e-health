@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../lib/api';
-import { CheckCircle2, AlertCircle, Stethoscope, Mail, Calendar } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Stethoscope, Mail, Calendar, TrendingUp } from 'lucide-react';
 
 interface Results {
   gad7: {
@@ -72,7 +72,11 @@ const TrafficLight = ({ color, label, score }: { color: string; label: string; s
   );
 };
 
-export function ResultsDashboard() {
+interface ResultsDashboardProps {
+  onViewProgress?: () => void;
+}
+
+export function ResultsDashboard({ onViewProgress }: ResultsDashboardProps) {
   const { } = useAuth();
   const [results, setResults] = useState<Results>({
     gad7: null,
@@ -253,6 +257,18 @@ export function ResultsDashboard() {
             These assessments are screening tools only and do not constitute a medical diagnosis. Please consult with a healthcare professional to discuss your results and determine appropriate next steps.
           </p>
         </div>
+
+        {onViewProgress && (
+          <div className="mt-6">
+            <button
+              onClick={onViewProgress}
+              className="w-full px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium flex items-center justify-center"
+            >
+              <TrendingUp className="w-5 h-5 mr-2" />
+              View My Progress & Retake Surveys
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Doctor Booking Section */}

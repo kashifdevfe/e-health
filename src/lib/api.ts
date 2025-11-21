@@ -286,6 +286,19 @@ class ApiClient {
   async getDoctorAnalytics() {
     return this.request('/api/analytics/doctor');
   }
+
+  // Patient Progress Tracking
+  async getAssessmentHistory() {
+    return this.request('/api/patient/assessment-history');
+  }
+
+  async getPatientTreatmentPlans() {
+    return this.request('/api/patient/treatment-plans');
+  }
+
+  async getPatientCareActivities() {
+    return this.request('/api/patient/care-activities');
+  }
 }
 
 export const api = new ApiClient();

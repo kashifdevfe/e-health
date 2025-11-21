@@ -7,13 +7,16 @@ import { PHQ9Assessment } from '../Assessments/PHQ9Assessment';
 import { DASS21Assessment } from '../Assessments/DASS21Assessment';
 import { CVDAssessment } from '../Assessments/CVDAssessment';
 import { ResultsDashboard } from './ResultsDashboard';
-import { ClipboardList, LogOut } from 'lucide-react';
+import { PatientProgressDashboard } from './PatientProgressDashboard';
+import { ClipboardList, LogOut, TrendingUp, ArrowLeft } from 'lucide-react';
 
 type Step = 'demographics' | 'gad7' | 'phq9' | 'dass21' | 'cvd' | 'results';
+type View = 'survey-flow' | 'progress';
 
 export function PatientDashboard() {
   const { signOut, profile } = useAuth();
   const [currentStep, setCurrentStep] = useState<Step>('demographics');
+  const [currentView, setCurrentView] = useState<View>('survey-flow');
   const [hasDemographics, setHasDemographics] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -39,6 +42,19 @@ export function PatientDashboard() {
     await signOut();
   };
 
+  const handleRetakeSurvey = (surveyType: 'gad7' | 'phq9' | 'dass21' | 'cvd') => {
+    setCurrentStep(surveyType);
+    setCurrentView('survey-flow');
+  };
+
+  const handleViewProgress = () => {
+    setCurrentView('progress');
+  };
+
+  const handleBackToSurvey = () => {
+    setCurrentView('survey-flow');
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-soft to-primary-light flex items-center justify-center">
@@ -61,101 +77,127 @@ export function PatientDashboard() {
               <p className="text-sm text-gray-600">Welcome, {profile?.full_name}</p>
             </div>
           </div>
-          <button
-            onClick={handleLogout}
-            className="flex items-center px-4 py-2 text-gray-700 hover:text-gray-900 transition"
-          >
-            <LogOut className="w-5 h-5 mr-2" />
-            Logout
-          </button>
+          <div className="flex items-center space-x-4">
+            {currentView === 'survey-flow' && hasDemographics && (
+              <button
+                onClick={handleViewProgress}
+                className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium"
+              >
+                <TrendingUp className="w-5 h-5 mr-2" />
+                My Progress
+              </button>
+            )}
+            {currentView === 'progress' && (
+              <button
+                onClick={handleBackToSurvey}
+                className="flex items-center px-4 py-2 text-primary hover:text-primary-dark transition font-medium"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Back to Surveys
+              </button>
+            )}
+            <button
+              onClick={handleLogout}
+              className="flex items-center px-4 py-2 text-gray-700 hover:text-gray-900 transition"
+            >
+              <LogOut className="w-5 h-5 mr-2" />
+              Logout
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-2xl font-bold text-gray-800">Assessment Progress</h2>
-          </div>
-          <div className="flex space-x-2">
-            {['demographics', 'gad7', 'phq9', 'dass21', 'cvd', 'results'].map((step, index) => (
-              <div
-                key={step}
-                className={`flex-1 h-2 rounded-full ${['demographics', 'gad7', 'phq9', 'dass21', 'cvd', 'results'].indexOf(currentStep) >= index
-                    ? 'bg-primary'
-                    : 'bg-primary-light'
-                  }`}
-              />
-            ))}
-          </div>
-          <div className="flex justify-between mt-2 text-xs text-gray-600">
-            <span>Demographics</span>
-            <span>GAD-7</span>
-            <span>PHQ-9</span>
-            <span>DASS-21</span>
-            <span>CVD</span>
-            <span>Results</span>
-          </div>
-        </div>
-
-        {currentStep === 'demographics' && (
-          <DemographicsForm onComplete={() => setCurrentStep('gad7')} />
-        )}
-
-        {currentStep === 'gad7' && (
-          <div>
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-primary-dark mb-2">GAD-7 Anxiety Assessment</h3>
-              <p className="text-gray-600 mb-4">
-                This assessment will help screen for generalized anxiety disorder. It takes about 2-3 minutes to complete.
-              </p>
-              <button
-                onClick={() => setCurrentStep('gad7')}
-                className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium"
-              >
-                Begin Assessment
-              </button>
+        {currentView === 'survey-flow' ? (
+          <>
+            <div className="mb-8">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-800">Assessment Progress</h2>
+              </div>
+              <div className="flex space-x-2">
+                {['demographics', 'gad7', 'phq9', 'dass21', 'cvd', 'results'].map((step, index) => (
+                  <div
+                    key={step}
+                    className={`flex-1 h-2 rounded-full ${['demographics', 'gad7', 'phq9', 'dass21', 'cvd', 'results'].indexOf(currentStep) >= index
+                      ? 'bg-primary'
+                      : 'bg-primary-light'
+                      }`}
+                  />
+                ))}
+              </div>
+              <div className="flex justify-between mt-2 text-xs text-gray-600">
+                <span>Demographics</span>
+                <span>GAD-7</span>
+                <span>PHQ-9</span>
+                <span>DASS-21</span>
+                <span>CVD</span>
+                <span>Results</span>
+              </div>
             </div>
-            <GAD7Assessment onComplete={() => setCurrentStep('phq9')} />
-          </div>
-        )}
 
-        {currentStep === 'phq9' && (
-          <div>
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-primary-dark mb-2">PHQ-9 Depression Assessment</h3>
-              <p className="text-gray-600 mb-4">
-                This assessment will help screen for depression. It takes about 2-3 minutes to complete.
-              </p>
-            </div>
-            <PHQ9Assessment onComplete={() => setCurrentStep('dass21')} />
-          </div>
-        )}
+            {currentStep === 'demographics' && (
+              <DemographicsForm onComplete={() => setCurrentStep('gad7')} />
+            )}
 
-        {currentStep === 'dass21' && (
-          <div>
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-primary-dark mb-2">DASS-21 Assessment</h3>
-              <p className="text-gray-600 mb-4">
-                This assessment evaluates depression, anxiety, and stress. It takes about 5-7 minutes to complete.
-              </p>
-            </div>
-            <DASS21Assessment onComplete={() => setCurrentStep('cvd')} />
-          </div>
-        )}
+            {currentStep === 'gad7' && (
+              <div>
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-primary-dark mb-2">GAD-7 Anxiety Assessment</h3>
+                  <p className="text-gray-600 mb-4">
+                    This assessment will help screen for generalized anxiety disorder. It takes about 2-3 minutes to complete.
+                  </p>
+                  <button
+                    onClick={() => setCurrentStep('gad7')}
+                    className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition font-medium"
+                  >
+                    Begin Assessment
+                  </button>
+                </div>
+                <GAD7Assessment onComplete={() => setCurrentStep('phq9')} />
+              </div>
+            )}
 
-        {currentStep === 'cvd' && (
-          <div>
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-semibold text-primary-dark mb-2">Cardiovascular Risk Assessment</h3>
-              <p className="text-gray-600 mb-4">
-                This assessment evaluates your cardiovascular health risk factors. It takes about 3-4 minutes to complete.
-              </p>
-            </div>
-            <CVDAssessment onComplete={() => setCurrentStep('results')} />
-          </div>
-        )}
+            {currentStep === 'phq9' && (
+              <div>
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-primary-dark mb-2">PHQ-9 Depression Assessment</h3>
+                  <p className="text-gray-600 mb-4">
+                    This assessment will help screen for depression. It takes about 2-3 minutes to complete.
+                  </p>
+                </div>
+                <PHQ9Assessment onComplete={() => setCurrentStep('dass21')} />
+              </div>
+            )}
 
-        {currentStep === 'results' && <ResultsDashboard />}
+            {currentStep === 'dass21' && (
+              <div>
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-primary-dark mb-2">DASS-21 Assessment</h3>
+                  <p className="text-gray-600 mb-4">
+                    This assessment evaluates depression, anxiety, and stress. It takes about 5-7 minutes to complete.
+                  </p>
+                </div>
+                <DASS21Assessment onComplete={() => setCurrentStep('cvd')} />
+              </div>
+            )}
+
+            {currentStep === 'cvd' && (
+              <div>
+                <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+                  <h3 className="text-lg font-semibold text-primary-dark mb-2">Cardiovascular Risk Assessment</h3>
+                  <p className="text-gray-600 mb-4">
+                    This assessment evaluates your cardiovascular health risk factors. It takes about 3-4 minutes to complete.
+                  </p>
+                </div>
+                <CVDAssessment onComplete={() => setCurrentStep('results')} />
+              </div>
+            )}
+
+            {currentStep === 'results' && <ResultsDashboard onViewProgress={handleViewProgress} />}
+          </>
+        ) : (
+          <PatientProgressDashboard onRetakeSurvey={handleRetakeSurvey} />
+        )}
       </div>
     </div>
   );
