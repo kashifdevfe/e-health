@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_API_URL || 'https://e-health-sage.vercel.app';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://e-health-2j5n.vercel.app' : 'http://localhost:3001');
 
 export interface ApiError {
   error: string;

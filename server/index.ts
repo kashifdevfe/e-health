@@ -12,9 +12,9 @@ const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'your
 app.use(cors({
   origin: [
     'http://localhost:5173',
-    'https://e-health-production.up.railway.app',
     'https://e-health-iota.vercel.app',
     'https://e-health-sage.vercel.app',
+    'https://e-health-2j5n.vercel.app',
   ],
   credentials: true,
 }));
@@ -1176,7 +1176,7 @@ app.get('/api/emergency-alerts', authenticateToken, async (req, res) => {
       where: { id: userId },
     });
 
-    let alerts;
+    let alerts: any[];
 
     if (user?.userRole === 'doctor') {
       // Get alerts for all patients assigned to this doctor
