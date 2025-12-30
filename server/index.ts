@@ -17,6 +17,8 @@ app.use(cors({
     'https://e-health-2j5n.vercel.app',
   ],
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 app.use(bodyParser.json());
 
