@@ -130,13 +130,13 @@ export function CVDAssessment({ onComplete }: CVDAssessmentProps) {
         <div className="flex items-center mb-6">
           <HeartPulse className="w-8 h-8 text-secondary mr-3" />
           <div>
-            <h2 className="text-2xl font-bold text-primary-dark">Cardiovascular Risk Assessment</h2>
+            <h2 className="text-2xl font-bold text-secondary">Cardiovascular Risk Assessment</h2>
             <p className="text-sm text-gray-600 mt-1">Answer the following questions to assess your cardiovascular health risk</p>
           </div>
         </div>
 
         <div className="bg-accent-light border border-accent rounded-lg p-4 mb-6">
-          <p className="text-sm text-primary-dark">
+          <p className="text-sm text-secondary">
             <strong>Important Disclaimer:</strong> This assessment is for screening purposes only and does not replace professional medical diagnosis. If you have severe symptoms or are in crisis, seek immediate medical attention or call emergency services.
           </p>
         </div>
@@ -150,7 +150,7 @@ export function CVDAssessment({ onComplete }: CVDAssessmentProps) {
             const fieldName = `q${index + 1}` as QuestionKey;
             return (
               <div key={fieldName} className="border-b pb-4">
-                <p className="font-medium text-primary-dark mb-3">
+                <p className="font-medium text-secondary mb-3">
                   {index + 1}. {q.question}
                 </p>
                 <div className="space-y-2">

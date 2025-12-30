@@ -103,7 +103,7 @@ export function DoctorDashboard() {
 
   const getColorBadge = (color: string) => {
     const colors: { [key: string]: string } = {
-      green: 'bg-green-500',
+      green: 'bg-primary',
       yellow: 'bg-yellow-500',
       orange: 'bg-orange-500',
       maroon: 'bg-red-700',
@@ -117,9 +117,9 @@ export function DoctorDashboard() {
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <Stethoscope className="w-8 h-8 text-primary mr-3" />
+            <Stethoscope className="w-8 h-8 text-secondary mr-3" />
             <div>
-              <h1 className="text-xl font-bold text-primary-dark">Doctor Dashboard</h1>
+              <h1 className="text-xl font-bold text-secondary">Doctor Dashboard</h1>
               <p className="text-sm text-gray-600">Welcome, Dr. {profile?.full_name}</p>
             </div>
           </div>
@@ -141,31 +141,31 @@ export function DoctorDashboard() {
               <button
                 onClick={() => setActiveTab('patients')}
                 className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 transition ${activeTab === 'patients'
-                  ? 'border-primary text-primary'
+                  ? 'border-primary text-secondary'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
               >
-                <Users className="w-5 h-5 mr-2" />
+                <Users className={`w-5 h-5 mr-2 ${activeTab === 'patients' ? 'text-primary' : ''}`} />
                 Patient Monitoring
               </button>
               <button
                 onClick={() => setActiveTab('analytics')}
                 className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 transition ${activeTab === 'analytics'
-                  ? 'border-primary text-primary'
+                  ? 'border-primary text-secondary'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
               >
-                <BarChart3 className="w-5 h-5 mr-2" />
+                <BarChart3 className={`w-5 h-5 mr-2 ${activeTab === 'analytics' ? 'text-primary' : ''}`} />
                 Analytics
               </button>
               <button
                 onClick={() => setActiveTab('alerts')}
                 className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 transition ${activeTab === 'alerts'
-                  ? 'border-primary text-primary'
+                  ? 'border-primary text-secondary'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                   }`}
               >
-                <AlertTriangle className="w-5 h-5 mr-2" />
+                <AlertTriangle className={`w-5 h-5 mr-2 ${activeTab === 'alerts' ? 'text-primary' : ''}`} />
                 Emergency Alerts
               </button>
             </nav>
@@ -189,8 +189,8 @@ export function DoctorDashboard() {
           <div className="bg-white rounded-lg shadow-lg p-8">
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
-                <Users className="w-8 h-8 text-primary mr-3" />
-                <h2 className="text-2xl font-bold text-primary-dark">Patient Monitoring</h2>
+                <Users className="w-8 h-8 text-secondary mr-3" />
+                <h2 className="text-2xl font-bold text-secondary">Patient Monitoring</h2>
               </div>
               {selectedPatientForPlan && (
                 <button
@@ -230,7 +230,7 @@ export function DoctorDashboard() {
                       <div key={patientData.patient.id} className="border border-gray-200 rounded-lg p-6">
                         <div className="flex justify-between items-start mb-4">
                           <div>
-                            <h3 className="text-lg font-semibold text-gray-800">
+                            <h3 className="text-lg font-semibold text-secondary">
                               {patientData.patient.full_name}
                             </h3>
                             <p className="text-sm text-gray-600">
@@ -293,7 +293,7 @@ export function DoctorDashboard() {
                         <div className="border-t border-gray-200 pt-4 mt-4">
                           <div className="flex items-center justify-between mb-3">
                             <div className="flex items-center">
-                              <UserPlus className="w-5 h-5 text-primary mr-2" />
+                              <UserPlus className="w-5 h-5 text-secondary mr-2" />
                               <h4 className="text-sm font-semibold text-gray-700">Assigned Caregivers</h4>
                             </div>
                           </div>
@@ -303,7 +303,7 @@ export function DoctorDashboard() {
                               {patientData.caregivers.map((caregiver) => (
                                 <span
                                   key={caregiver.id}
-                                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800"
+                                  className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary-soft text-secondary"
                                 >
                                   {caregiver.fullName}
                                 </span>
@@ -330,7 +330,7 @@ export function DoctorDashboard() {
                             </select>
 
                             {assignmentSuccess === patientData.patient.id ? (
-                              <div className="px-4 py-2 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
+                              <div className="px-4 py-2 bg-primary-soft border border-primary text-secondary rounded-lg text-sm">
                                 ✓ Assigned!
                               </div>
                             ) : (
@@ -340,7 +340,7 @@ export function DoctorDashboard() {
                                   !selectedCaregivers[patientData.patient.id] ||
                                   assigningCaregiver === patientData.patient.id
                                 }
-                                className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
+                                className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                               >
                                 {assigningCaregiver === patientData.patient.id ? 'Assigning...' : 'Assign'}
                               </button>
@@ -352,7 +352,7 @@ export function DoctorDashboard() {
                         <div className="border-t border-gray-200 pt-4 mt-4">
                           <button
                             onClick={() => setSelectedPatientForPlan({ id: patientData.patient.id, name: patientData.patient.full_name })}
-                            className="flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark transition text-sm font-medium"
+                            className="flex items-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition text-sm font-medium"
                           >
                             <FileText className="w-4 h-4 mr-2" />
                             View Treatment Plans

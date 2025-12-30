@@ -29,7 +29,7 @@ class ApiClient {
 
     // Add Authorization header if token exists
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      (headers as any)['Authorization'] = `Bearer ${token}`;
     }
 
     const response = await fetch(`${API_URL}${endpoint}`, {
@@ -298,6 +298,9 @@ class ApiClient {
 
   async getPatientCareActivities() {
     return this.request('/api/patient/care-activities');
+  }
+  async getResources() {
+    return this.request('/api/resources');
   }
 }
 

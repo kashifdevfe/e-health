@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -331,4 +331,36 @@ model EmergencyAlert {
   patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@map("emergency_alerts")
+}
+
+// Resources / Education Module
+model ResourceCategory {
+  id           String         @id @default(uuid())
+  title        String
+  description  String?
+  thumbnailUrl String?        @map("thumbnail_url")
+  items        ResourceItem[]
+
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  @@map("resource_categories")
+}
+
+model ResourceItem {
+  id           String           @id @default(uuid())
+  categoryId   String           @map("category_id")
+  title        String
+  description  String?
+  type         String           // 'video', 'audio', 'article'
+  content      String?          // The full script/text for TTS
+  duration     Int?             // in seconds
+  videoUrl     String?          @map("video_url")
+  audioUrl     String?          @map("audio_url")
+  thumbnailUrl String?          @map("thumbnail_url")
+  
+  category     ResourceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  createdAt    DateTime         @default(now()) @map("created_at")
+
+  @@map("resource_items")
 }

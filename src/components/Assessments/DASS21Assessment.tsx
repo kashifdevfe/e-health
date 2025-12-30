@@ -141,7 +141,7 @@ export function DASS21Assessment({ onComplete }: DASS21AssessmentProps) {
         <div className="flex items-center mb-6">
           <Activity className="w-8 h-8 text-primary mr-3" />
           <div>
-            <h2 className="text-2xl font-bold text-primary-dark">DASS-21 Assessment</h2>
+            <h2 className="text-2xl font-bold text-secondary">DASS-21 Assessment</h2>
             <p className="text-sm text-gray-600 mt-1">
               Please read each statement and indicate how much it applied to you over the past week
             </p>
@@ -155,12 +155,12 @@ export function DASS21Assessment({ onComplete }: DASS21AssessmentProps) {
 
           {sections.map(section => (
             <div key={section.key} className={`border-l-4 ${section.borderClass} pl-4`}>
-              <h3 className="text-xl font-semibold text-primary-dark mb-4">{section.title}</h3>
+              <h3 className="text-xl font-semibold text-secondary mb-4">{section.title}</h3>
               {section.questions.map((question, index) => {
                 const fieldName = `${section.key}_q${index + 1}` as FieldKey;
                 return (
                   <div key={fieldName} className="border-b pb-4 mb-4">
-                    <p className="font-medium text-primary-dark mb-3">
+                    <p className="font-medium text-secondary mb-3">
                       {index + 1}. {question}
                     </p>
                     <div className="space-y-2">

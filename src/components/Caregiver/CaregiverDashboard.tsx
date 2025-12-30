@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { api } from '../../lib/api';
-import { Heart, LogOut, Users, Pill, Activity, Apple, Dumbbell, AlertTriangle } from 'lucide-react';
+import { Heart, LogOut, Users, Pill, Activity, Apple, Dumbbell } from 'lucide-react';
 
 interface Patient {
   id: string;
@@ -98,13 +98,13 @@ export function CaregiverDashboard() {
 
   useEffect(() => {
     if (selectedPatient) {
-      loadPatientData();
+      loadPatientData(selectedPatient);
     }
   }, [selectedPatient, activeTab]);
 
   const loadPatients = async () => {
     try {
-      const patientsData = await api.getCaregiverPatients();
+      const patientsData = await api.getCaregiverPatients() as PatientData[];
       setPatients(patientsData);
       if (patientsData.length > 0) {
         setSelectedPatient(patientsData[0].patient.id);
@@ -116,15 +116,15 @@ export function CaregiverDashboard() {
     }
   };
 
-  const loadPatientData = async () => {
-    if (!selectedPatient) return;
+  const loadPatientData = async (patientId: string) => {
+    if (!patientId) return;
 
     try {
       if (activeTab === 'medications') {
-        const meds = await api.getMedications(selectedPatient);
+        const meds = await api.getMedications(patientId) as Medication[];
         setMedications(meds);
       } else if (activeTab === 'vitals') {
-        const vitals = await api.getVitalSigns(selectedPatient);
+        const vitals = await api.getVitalSigns(patientId) as VitalSigns[];
         setVitalSigns(vitals);
       }
     } catch (error) {
@@ -151,7 +151,7 @@ export function CaregiverDashboard() {
         endDate: '',
         notes: '',
       });
-      loadPatientData();
+      loadPatientData(selectedPatient);
     } catch (error) {
       console.error('Error adding medication:', error);
     }
@@ -182,7 +182,7 @@ export function CaregiverDashboard() {
         recordedAt: new Date().toISOString().slice(0, 16),
         notes: '',
       });
-      loadPatientData();
+      loadPatientData(selectedPatient);
     } catch (error) {
       console.error('Error recording vitals:', error);
     }
@@ -246,16 +246,15 @@ export function CaregiverDashboard() {
     await signOut();
   };
 
-  const selectedPatientData = patients.find(p => p.patient.id === selectedPatient);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-primary-soft to-primary-light">
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
           <div className="flex items-center">
-            <Heart className="w-8 h-8 text-blue-600 mr-3" />
+            <Heart className="w-8 h-8 text-primary mr-3" />
             <div>
-              <h1 className="text-xl font-bold text-gray-800">Caregiver Dashboard</h1>
+              <h1 className="text-xl font-bold text-primary-dark">Caregiver Dashboard</h1>
               <p className="text-sm text-gray-600">Welcome, {profile?.full_name}</p>
             </div>
           </div>
@@ -272,7 +271,7 @@ export function CaregiverDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
           </div>
         ) : patients.length === 0 ? (
           <div className="bg-white rounded-lg shadow-lg p-8 text-center">
@@ -289,7 +288,7 @@ export function CaregiverDashboard() {
               <select
                 value={selectedPatient || ''}
                 onChange={(e) => setSelectedPatient(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {patients.map((p) => (
                   <option key={p.patient.id} value={p.patient.id}>
@@ -306,8 +305,8 @@ export function CaregiverDashboard() {
                   <button
                     onClick={() => setActiveTab('medications')}
                     className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 transition ${activeTab === 'medications'
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-primary text-primary-dark'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                   >
                     <Pill className="w-5 h-5 mr-2" />
@@ -316,8 +315,8 @@ export function CaregiverDashboard() {
                   <button
                     onClick={() => setActiveTab('vitals')}
                     className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 transition ${activeTab === 'vitals'
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-primary text-primary-dark'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                   >
                     <Activity className="w-5 h-5 mr-2" />
@@ -326,8 +325,8 @@ export function CaregiverDashboard() {
                   <button
                     onClick={() => setActiveTab('nutrition')}
                     className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 transition ${activeTab === 'nutrition'
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-primary text-primary-dark'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                   >
                     <Apple className="w-5 h-5 mr-2" />
@@ -336,8 +335,8 @@ export function CaregiverDashboard() {
                   <button
                     onClick={() => setActiveTab('exercise')}
                     className={`flex items-center px-6 py-4 text-sm font-medium border-b-2 transition ${activeTab === 'exercise'
-                        ? 'border-blue-500 text-blue-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'border-primary text-primary-dark'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                       }`}
                   >
                     <Dumbbell className="w-5 h-5 mr-2" />
@@ -354,14 +353,14 @@ export function CaregiverDashboard() {
                       <h3 className="text-lg font-semibold text-gray-800">Medication Schedule</h3>
                       <button
                         onClick={() => setShowMedicationForm(!showMedicationForm)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition"
                       >
                         {showMedicationForm ? 'Cancel' : 'Add Medication'}
                       </button>
                     </div>
 
                     {showMedicationForm && (
-                      <form onSubmit={handleAddMedication} className="bg-gray-50 p-4 rounded-lg space-y-4">
+                      <form onSubmit={handleAddMedication} className="bg-primary-soft p-4 rounded-lg space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Medication Name *</label>
@@ -370,7 +369,7 @@ export function CaregiverDashboard() {
                               required
                               value={medicationForm.name}
                               onChange={(e) => setMedicationForm({ ...medicationForm, name: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -381,7 +380,7 @@ export function CaregiverDashboard() {
                               value={medicationForm.dosage}
                               onChange={(e) => setMedicationForm({ ...medicationForm, dosage: e.target.value })}
                               placeholder="e.g., 500mg"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -392,7 +391,7 @@ export function CaregiverDashboard() {
                               value={medicationForm.frequency}
                               onChange={(e) => setMedicationForm({ ...medicationForm, frequency: e.target.value })}
                               placeholder="e.g., Twice daily"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -403,7 +402,7 @@ export function CaregiverDashboard() {
                               value={medicationForm.time}
                               onChange={(e) => setMedicationForm({ ...medicationForm, time: e.target.value })}
                               placeholder="e.g., 8:00 AM, 8:00 PM"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -413,7 +412,7 @@ export function CaregiverDashboard() {
                               required
                               value={medicationForm.startDate}
                               onChange={(e) => setMedicationForm({ ...medicationForm, startDate: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -422,7 +421,7 @@ export function CaregiverDashboard() {
                               type="date"
                               value={medicationForm.endDate}
                               onChange={(e) => setMedicationForm({ ...medicationForm, endDate: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                         </div>
@@ -432,12 +431,12 @@ export function CaregiverDashboard() {
                             value={medicationForm.notes}
                             onChange={(e) => setMedicationForm({ ...medicationForm, notes: e.target.value })}
                             rows={2}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                         <button
                           type="submit"
-                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                          className="w-full px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition"
                         >
                           Save Medication
                         </button>
@@ -476,14 +475,14 @@ export function CaregiverDashboard() {
                       <h3 className="text-lg font-semibold text-gray-800">Vital Signs History</h3>
                       <button
                         onClick={() => setShowVitalsForm(!showVitalsForm)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition"
                       >
                         {showVitalsForm ? 'Cancel' : 'Record Vitals'}
                       </button>
                     </div>
 
                     {showVitalsForm && (
-                      <form onSubmit={handleRecordVitals} className="bg-gray-50 p-4 rounded-lg space-y-4">
+                      <form onSubmit={handleRecordVitals} className="bg-primary-soft p-4 rounded-lg space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Blood Pressure</label>
@@ -492,7 +491,7 @@ export function CaregiverDashboard() {
                               value={vitalsForm.bloodPressure}
                               onChange={(e) => setVitalsForm({ ...vitalsForm, bloodPressure: e.target.value })}
                               placeholder="e.g., 120/80"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -501,7 +500,7 @@ export function CaregiverDashboard() {
                               type="number"
                               value={vitalsForm.heartRate}
                               onChange={(e) => setVitalsForm({ ...vitalsForm, heartRate: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -511,7 +510,7 @@ export function CaregiverDashboard() {
                               step="0.1"
                               value={vitalsForm.temperature}
                               onChange={(e) => setVitalsForm({ ...vitalsForm, temperature: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -520,7 +519,7 @@ export function CaregiverDashboard() {
                               type="number"
                               value={vitalsForm.oxygenLevel}
                               onChange={(e) => setVitalsForm({ ...vitalsForm, oxygenLevel: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -530,7 +529,7 @@ export function CaregiverDashboard() {
                               step="0.1"
                               value={vitalsForm.weight}
                               onChange={(e) => setVitalsForm({ ...vitalsForm, weight: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -540,7 +539,7 @@ export function CaregiverDashboard() {
                               required
                               value={vitalsForm.recordedAt}
                               onChange={(e) => setVitalsForm({ ...vitalsForm, recordedAt: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                         </div>
@@ -550,12 +549,12 @@ export function CaregiverDashboard() {
                             value={vitalsForm.notes}
                             onChange={(e) => setVitalsForm({ ...vitalsForm, notes: e.target.value })}
                             rows={2}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                         <button
                           type="submit"
-                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                          className="w-full px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition"
                         >
                           Save Vital Signs
                         </button>
@@ -618,14 +617,14 @@ export function CaregiverDashboard() {
                       <h3 className="text-lg font-semibold text-gray-800">Nutrition Tracking</h3>
                       <button
                         onClick={() => setShowNutritionForm(!showNutritionForm)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition"
                       >
                         {showNutritionForm ? 'Cancel' : 'Log Meal'}
                       </button>
                     </div>
 
                     {showNutritionForm && (
-                      <form onSubmit={handleLogNutrition} className="bg-gray-50 p-4 rounded-lg space-y-4">
+                      <form onSubmit={handleLogNutrition} className="bg-primary-soft p-4 rounded-lg space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Meal Type *</label>
@@ -633,7 +632,7 @@ export function CaregiverDashboard() {
                               required
                               value={nutritionForm.mealType}
                               onChange={(e) => setNutritionForm({ ...nutritionForm, mealType: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                               <option value="breakfast">Breakfast</option>
                               <option value="lunch">Lunch</option>
@@ -648,7 +647,7 @@ export function CaregiverDashboard() {
                               required
                               value={nutritionForm.recordedAt}
                               onChange={(e) => setNutritionForm({ ...nutritionForm, recordedAt: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                         </div>
@@ -660,7 +659,7 @@ export function CaregiverDashboard() {
                             onChange={(e) => setNutritionForm({ ...nutritionForm, foods: e.target.value })}
                             placeholder="List the foods consumed..."
                             rows={3}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -670,7 +669,7 @@ export function CaregiverDashboard() {
                               type="number"
                               value={nutritionForm.calories}
                               onChange={(e) => setNutritionForm({ ...nutritionForm, calories: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -680,7 +679,7 @@ export function CaregiverDashboard() {
                               step="0.1"
                               value={nutritionForm.protein}
                               onChange={(e) => setNutritionForm({ ...nutritionForm, protein: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -690,7 +689,7 @@ export function CaregiverDashboard() {
                               step="0.1"
                               value={nutritionForm.carbs}
                               onChange={(e) => setNutritionForm({ ...nutritionForm, carbs: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -700,7 +699,7 @@ export function CaregiverDashboard() {
                               step="0.1"
                               value={nutritionForm.fats}
                               onChange={(e) => setNutritionForm({ ...nutritionForm, fats: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                         </div>
@@ -710,12 +709,12 @@ export function CaregiverDashboard() {
                             value={nutritionForm.notes}
                             onChange={(e) => setNutritionForm({ ...nutritionForm, notes: e.target.value })}
                             rows={2}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                           />
                         </div>
                         <button
                           type="submit"
-                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                          className="w-full px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition"
                         >
                           Save Nutrition Log
                         </button>
@@ -733,14 +732,14 @@ export function CaregiverDashboard() {
                       <h3 className="text-lg font-semibold text-gray-800">Exercise Monitoring</h3>
                       <button
                         onClick={() => setShowExerciseForm(!showExerciseForm)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                        className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary-dark transition"
                       >
                         {showExerciseForm ? 'Cancel' : 'Log Exercise'}
                       </button>
                     </div>
 
                     {showExerciseForm && (
-                      <form onSubmit={handleLogExercise} className="bg-gray-50 p-4 rounded-lg space-y-4">
+                      <form onSubmit={handleLogExercise} className="bg-primary-soft p-4 rounded-lg space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Exercise Type *</label>
@@ -750,7 +749,7 @@ export function CaregiverDashboard() {
                               value={exerciseForm.exerciseType}
                               onChange={(e) => setExerciseForm({ ...exerciseForm, exerciseType: e.target.value })}
                               placeholder="e.g., Walking, Swimming"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -760,7 +759,7 @@ export function CaregiverDashboard() {
                               required
                               value={exerciseForm.duration}
                               onChange={(e) => setExerciseForm({ ...exerciseForm, duration: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div>
@@ -769,7 +768,7 @@ export function CaregiverDashboard() {
                               required
                               value={exerciseForm.intensity}
                               onChange={(e) => setExerciseForm({ ...exerciseForm, intensity: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             >
                               <option value="low">Low</option>
                               <option value="medium">Medium</option>
@@ -782,7 +781,7 @@ export function CaregiverDashboard() {
                               type="number"
                               value={exerciseForm.caloriesBurned}
                               onChange={(e) => setExerciseForm({ ...exerciseForm, caloriesBurned: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                           <div className="md:col-span-2">
@@ -792,7 +791,7 @@ export function CaregiverDashboard() {
                               required
                               value={exerciseForm.recordedAt}
                               onChange={(e) => setExerciseForm({ ...exerciseForm, recordedAt: e.target.value })}
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
                             />
                           </div>
                         </div>

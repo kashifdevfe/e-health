@@ -108,7 +108,7 @@ export function PHQ9Assessment({ onComplete }: PHQ9AssessmentProps) {
         <div className="flex items-center mb-6">
           <Heart className="w-8 h-8 text-primary mr-3" />
           <div>
-            <h2 className="text-2xl font-bold text-primary-dark">PHQ-9 Depression Assessment</h2>
+            <h2 className="text-2xl font-bold text-secondary">PHQ-9 Depression Assessment</h2>
             <p className="text-sm text-gray-600 mt-1">
               Over the last 2 weeks, how often have you been bothered by any of the following problems?
             </p>
@@ -125,7 +125,7 @@ export function PHQ9Assessment({ onComplete }: PHQ9AssessmentProps) {
 
             return (
               <div key={fieldName} className="border-b pb-4">
-                <p className="font-medium text-primary-dark mb-3">
+                <p className="font-medium text-secondary mb-3">
                   {index + 1}. {question}
                 </p>
                 <div className="space-y-2">

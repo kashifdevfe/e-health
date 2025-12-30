@@ -104,7 +104,7 @@ export function GAD7Assessment({ onComplete }: GAD7AssessmentProps) {
         <div className="flex items-center mb-6">
           <Brain className="w-8 h-8 text-primary mr-3" />
           <div>
-            <h2 className="text-2xl font-bold text-primary-dark">GAD-7 Anxiety Assessment</h2>
+            <h2 className="text-2xl font-bold text-secondary">GAD-7 Anxiety Assessment</h2>
             <p className="text-sm text-gray-600 mt-1">
               Over the last 2 weeks, how often have you been bothered by the following problems?
             </p>
@@ -120,7 +120,7 @@ export function GAD7Assessment({ onComplete }: GAD7AssessmentProps) {
             const fieldName = questionKeys[index];
             return (
               <div key={fieldName} className="border-b pb-4">
-                <p className="font-medium text-primary-dark mb-3">
+                <p className="font-medium text-secondary mb-3">
                   {index + 1}. {question}
                 </p>
                 <div className="space-y-2">
@@ -148,7 +148,7 @@ export function GAD7Assessment({ onComplete }: GAD7AssessmentProps) {
           })}
 
           <div className="border-t pt-4">
-            <p className="font-medium text-primary-dark mb-3">
+            <p className="font-medium text-secondary mb-3">
               If you checked any problems, how difficult have they made it for you to do your work, take care of
               things at home, or get along with other people?
             </p>

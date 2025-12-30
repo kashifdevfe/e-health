@@ -272,7 +272,7 @@ export function ResultsDashboard({ onViewProgress }: ResultsDashboardProps) {
       </div>
 
       {/* Doctor Booking Section */}
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div id="doctor-booking-section" className="bg-white rounded-lg shadow-lg p-8">
         <div className="flex items-center mb-6">
           <Stethoscope className="w-8 h-8 text-primary mr-3" />
           <h2 className="text-2xl font-bold text-primary-dark">Book an Appointment</h2>

@@ -1358,6 +1358,21 @@ app.get('/api/patient/care-activities', authenticateToken, getPatientCareActivit
 app.get('/api/doctor/patient/:patientId/progress', authenticateToken, getDoctorPatientProgress);
 app.get('/api/caregiver/patient/:patientId/progress', authenticateToken, getCaregiverPatientProgress);
 
+app.get('/api/resources', authenticateToken, async (req, res) => {
+  try {
+    const resources = await prisma.resourceCategory.findMany({
+      include: {
+        items: true,
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+    res.json(resources);
+  } catch (error) {
+    console.error('Get resources error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
