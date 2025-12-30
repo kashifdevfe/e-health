@@ -10,17 +10,34 @@ const PORT = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SESSION_SECRET || 'your-jwt-secret-change-in-production';
 
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://e-health-iota.vercel.app',
-    'https://e-health-sage.vercel.app',
-    'https://e-health-2j5n.vercel.app',
-  ],
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'http://localhost:5173',
+      'https://e-health-iota.vercel.app',
+      'https://e-health-sage.vercel.app',
+      'https://e-health-2j5n.vercel.app',
+    ];
+    if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 200,
 }));
+
+// Manual OPTIONS handling for preflight
+app.options('*', cors() as any);
+
 app.use(bodyParser.json());
+
+// Health check route
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
 
 // JWT Auth middleware
 const authenticateToken = (req: express.Request, res: express.Response, next: express.NextFunction) => {
