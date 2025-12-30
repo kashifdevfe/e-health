@@ -1,6 +1,6 @@
 // Patient Progress Tracking Endpoints
 import { Request, Response } from 'express';
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 
 // Patient assessment history (for retaking surveys and viewing trends)
 export const getAssessmentHistory = async (req: Request, res: Response) => {
