@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import { prisma } from './prisma';
+import { prisma } from './prisma.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
@@ -1349,7 +1349,7 @@ import {
   getPatientCareActivities,
   getDoctorPatientProgress,
   getCaregiverPatientProgress,
-} from './progressEndpoints';
+} from './progressEndpoints.js';
 
 // Patient progress tracking routes
 app.get('/api/patient/assessment-history', authenticateToken, getAssessmentHistory);
