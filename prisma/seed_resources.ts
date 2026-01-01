@@ -430,37 +430,80 @@ Move gently. Stay consistent. And listen to your body.`,
             type: 'video',
             duration: 300,
             content: `Walking is excellent for heart health.
-Benefits of walking for heart health.
-Ensure proper footwear.
-Find safe walking areas.
-Use start slowly.`,
+
+It helps strengthen your heart and improves your overall wellbeing.
+
+Before you begin walking, make sure you have proper footwear that supports your feet.
+
+Find safe walking areas where you feel comfortable and secure.
+
+Start slowly and build up gradually over time.
+
+You can use a step counter or phone app to track your progress.
+
+Remember to listen to your body and stop if you feel unwell.`,
         },
         {
             title: 'Proper Walking Technique',
             type: 'video',
             duration: 300,
-            content: `Posture: Head up, shoulders relaxed.
-Arm swing: Natural, bent at 90 degrees.
-Foot placement: Heel to toe.
-Breathing: Regular, don't hold breath.
-Pace: Able to talk while walking.`,
+            content: `Let us learn the proper way to walk.
+
+Keep your head up and your shoulders relaxed.
+
+Swing your arms naturally, bent at about ninety degrees.
+
+Place your feet heel to toe with each step.
+
+Breathe regularly and do not hold your breath.
+
+Walk at a pace where you can still talk comfortably.
+
+If you cannot talk while walking, slow down your pace.
+
+Move smoothly and stay relaxed throughout your walk.`,
         },
         {
             title: 'Monitoring Your Walking Intensity',
             type: 'video',
             duration: 300,
-            content: `Talk test: You should be able to talk.
-If you cannot talk, slow down.
-Stop if you feel unwell.`,
+            content: `It is important to monitor how hard you are working while walking.
+
+The talk test is a simple way to check your intensity.
+
+You should be able to talk comfortably while walking.
+
+If you cannot talk, you are walking too fast. Slow down.
+
+Pay attention to how your body feels.
+
+If you feel unwell, stop walking immediately.
+
+Rest and recover between your walks.
+
+Track your progress over time to see how you are improving.`,
         },
         {
             title: 'Walking in Different Conditions',
             type: 'video',
             duration: 300,
-            content: `Hot weather precautions.
-Walking after rain.
-Indoor alternatives (Mall walking).
-Using walking aids.`,
+            content: `Walking in different weather conditions requires some precautions.
+
+In hot weather, walk during cooler times of day.
+
+Stay hydrated and take breaks in the shade.
+
+After rain, be careful of wet and slippery surfaces.
+
+If outdoor walking is not possible, consider indoor alternatives.
+
+Mall walking is a great option when weather is poor.
+
+You can also walk in place at home.
+
+If you need support, use walking aids like a cane or walker.
+
+Always prioritize your safety and comfort.`,
         },
     ];
 
@@ -487,27 +530,67 @@ Using walking aids.`,
             title: 'How Your Heart Works',
             type: 'video',
             duration: 180,
-            content: `Your heart works like a water pump.
-It moves blood through your body.
-In heart failure, the pump becomes weaker.`,
+            content: `Let us understand how your heart works.
+
+Your heart works like a water pump in your home.
+
+It pumps blood through your body, delivering oxygen and nutrients to all your organs.
+
+The heart has four chambers that work together to keep blood flowing.
+
+In heart failure, this pump becomes weaker and cannot pump blood as effectively.
+
+This is why you may feel tired or short of breath.
+
+But with proper care, exercise, and medication, your heart can work better.
+
+Understanding your heart helps you take better care of it.`,
         },
         {
             title: 'Understanding Heart Failure',
             type: 'video',
             duration: 180,
-            content: `Visualizing the weakened pump.
-Fluid backup visualization.
-Why symptoms occur.
-Role of exercise.`,
+            content: `Let us understand heart failure better.
+
+When the heart pump becomes weaker, it cannot pump blood as well as it should.
+
+This can cause fluid to build up in your body.
+
+You may notice swelling in your ankles or feel short of breath.
+
+This happens because the weakened heart cannot move blood efficiently.
+
+Medications help by removing extra fluid and helping the heart work better.
+
+Exercise also strengthens the heart muscle over time.
+
+Understanding why symptoms occur helps you manage them better.
+
+Remember, with proper care, you can live well with heart failure.`,
         },
         {
             title: 'Medication Actions',
             type: 'video',
             duration: 240,
-            content: `ACE inhibitors - "pipe wideners"
-Beta-blockers - "heart rate controllers"
-Diuretics - "excess water removers"
-Importance of timing.`,
+            content: `Let us understand how your medications work.
+
+ACE inhibitors work like pipe wideners. They widen your blood vessels, making it easier for blood to flow.
+
+This reduces the work your heart has to do.
+
+Beta-blockers are like heart rate controllers. They slow down your heart rate, giving your heart time to rest between beats.
+
+This helps your heart work more efficiently.
+
+Diuretics are like excess water removers. They help your body get rid of extra fluid.
+
+This reduces swelling and helps you breathe easier.
+
+It is very important to take your medications at the right time.
+
+Taking your medicine correctly helps protect your heart and keeps you feeling well.
+
+Always follow your doctor's instructions for your medications.`,
         },
     ];
 
