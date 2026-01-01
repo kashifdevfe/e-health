@@ -1393,11 +1393,21 @@ app.get('/api/resources', async (req, res) => {
     });
     
     console.log(`[Resources API] Found ${resources.length} categories`);
-    resources.forEach(cat => {
-      console.log(`[Resources API] Category: ${cat.title}, Items: ${cat.items.length}`);
-    });
+    console.log(`[Resources API] Resources type:`, typeof resources);
+    console.log(`[Resources API] Is array:`, Array.isArray(resources));
     
-    res.json(resources);
+    if (resources.length > 0) {
+      console.log(`[Resources API] First category ID:`, resources[0].id);
+      console.log(`[Resources API] First category title:`, resources[0].title);
+      console.log(`[Resources API] First category items count:`, resources[0].items?.length || 0);
+    }
+    
+    // Explicitly serialize to ensure proper JSON response
+    const serialized = JSON.parse(JSON.stringify(resources));
+    console.log(`[Resources API] Serialized length: ${serialized.length}`);
+    console.log(`[Resources API] Sending response with ${serialized.length} categories`);
+    
+    res.json(serialized);
   } catch (error) {
     console.error('Get resources error:', error);
     res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) });
