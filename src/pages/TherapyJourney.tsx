@@ -23,10 +23,15 @@ const TherapyJourney: React.FC = () => {
 
     const loadResources = async () => {
         try {
+            console.log('[TherapyJourney] Loading resources...');
             const data = await api.getResources();
-            setCategories(data);
+            console.log('[TherapyJourney] Resources loaded:', data);
+            setCategories(Array.isArray(data) ? data : []);
         } catch (error) {
-            console.error('Failed to load resources:', error);
+            console.error('[TherapyJourney] Failed to load resources:', error);
+            // Show error to user
+            alert(`Failed to load resources: ${error instanceof Error ? error.message : 'Unknown error'}`);
+            setCategories([]);
         } finally {
             setLoading(false);
         }
@@ -62,6 +67,11 @@ const TherapyJourney: React.FC = () => {
                     <div className="text-center py-20">
                         <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
                         <p className="mt-4 text-secondary">Loading content...</p>
+                    </div>
+                ) : categories.length === 0 ? (
+                    <div className="text-center py-20">
+                        <p className="text-xl text-secondary mb-4">No therapy resources available</p>
+                        <p className="text-secondary-light">Please check your connection or try refreshing the page.</p>
                     </div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

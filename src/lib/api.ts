@@ -36,19 +36,27 @@ class ApiClient {
       (headers as any)['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`${API_URL}${endpoint}`, {
+    const url = `${API_URL}${endpoint}`;
+    console.log(`[API] Making request to: ${url}`, { hasToken: !!token });
+
+    const response = await fetch(url, {
       ...options,
       headers,
     });
 
+    console.log(`[API] Response status: ${response.status}`, response.statusText);
+
     if (!response.ok) {
       const error: ApiError = await response.json().catch(() => ({
-        error: 'An error occurred',
+        error: `HTTP ${response.status}: ${response.statusText}`,
       }));
+      console.error(`[API] Error response:`, error);
       throw new Error(error.error);
     }
 
-    return response.json();
+    const data = await response.json();
+    console.log(`[API] Response data:`, data);
+    return data;
   }
 
   // Auth methods
