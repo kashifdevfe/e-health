@@ -17,6 +17,7 @@ app.use(cors({
       'https://e-health-sage.vercel.app',
       'https://e-health-2j5n.vercel.app',
       'https://e-health-y4rt.vercel.app',
+      'https://e-health-delta.vercel.app',
     ];
     // Allow any Vercel preview or production domain
     if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
@@ -1383,14 +1384,22 @@ app.get('/api/resources', authenticateToken, async (req, res) => {
   try {
     const resources = await prisma.resourceCategory.findMany({
       include: {
-        items: true,
+        items: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
       orderBy: { createdAt: 'asc' },
     });
+    
+    console.log(`[Resources API] Found ${resources.length} categories`);
+    resources.forEach(cat => {
+      console.log(`[Resources API] Category: ${cat.title}, Items: ${cat.items.length}`);
+    });
+    
     res.json(resources);
   } catch (error) {
     console.error('Get resources error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) });
   }
 });
 
