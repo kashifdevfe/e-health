@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import TherapySessionPlayer from '../components/TherapySessionPlayer';
-import { Play, BookOpen, Clock, ChevronRight } from 'lucide-react';
+import { Play, BookOpen } from 'lucide-react';
 import { therapyResources, ResourceCategory } from '../data/therapyResources';
 
 const TherapyJourney: React.FC = () => {
