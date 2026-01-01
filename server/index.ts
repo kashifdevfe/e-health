@@ -1383,6 +1383,16 @@ app.get('/api/caregiver/patient/:patientId/progress', authenticateToken, getCare
 // Resources endpoint - public access for educational content
 app.get('/api/resources', async (req, res) => {
   try {
+    // Log database connection info
+    const dbUrl = process.env.POSTGRES_PRISMA_URL;
+    console.log(`[Resources API] Database URL set:`, dbUrl ? 'Yes' : 'No');
+    console.log(`[Resources API] Database URL preview:`, dbUrl ? dbUrl.substring(0, 50) + '...' : 'Not set');
+    console.log(`[Resources API] NODE_ENV:`, process.env.NODE_ENV);
+    
+    // First, check if we can connect and count
+    const count = await prisma.resourceCategory.count();
+    console.log(`[Resources API] Total categories in database: ${count}`);
+    
     const resources = await prisma.resourceCategory.findMany({
       include: {
         items: {
@@ -1392,7 +1402,7 @@ app.get('/api/resources', async (req, res) => {
       orderBy: { createdAt: 'asc' },
     });
     
-    console.log(`[Resources API] Found ${resources.length} categories`);
+    console.log(`[Resources API] Query returned ${resources.length} categories`);
     console.log(`[Resources API] Resources type:`, typeof resources);
     console.log(`[Resources API] Is array:`, Array.isArray(resources));
     
@@ -1400,6 +1410,8 @@ app.get('/api/resources', async (req, res) => {
       console.log(`[Resources API] First category ID:`, resources[0].id);
       console.log(`[Resources API] First category title:`, resources[0].title);
       console.log(`[Resources API] First category items count:`, resources[0].items?.length || 0);
+    } else {
+      console.warn(`[Resources API] WARNING: Query returned 0 categories but count shows ${count}`);
     }
     
     // Explicitly serialize to ensure proper JSON response
@@ -1417,6 +1429,7 @@ app.get('/api/resources', async (req, res) => {
     res.status(200).json(serialized);
   } catch (error) {
     console.error('Get resources error:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack');
     res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) });
   }
 });
