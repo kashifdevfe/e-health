@@ -16,7 +16,9 @@ app.use(cors({
       'https://e-health-iota.vercel.app',
       'https://e-health-sage.vercel.app',
       'https://e-health-2j5n.vercel.app',
+      'https://e-health-y4rt.vercel.app',
     ];
+    // Allow any Vercel preview or production domain
     if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
       callback(null, true);
     } else {

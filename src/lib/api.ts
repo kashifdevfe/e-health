@@ -1,4 +1,8 @@
-const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://e-health-2j5n.vercel.app' : 'http://localhost:3001');
+// Use environment variable or default to same domain in production
+const API_URL = import.meta.env.VITE_API_URL || 
+  (import.meta.env.PROD 
+    ? (typeof window !== 'undefined' ? window.location.origin : '') 
+    : 'http://localhost:3001');
 
 export interface ApiError {
   error: string;
