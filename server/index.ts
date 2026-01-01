@@ -1385,9 +1385,15 @@ app.get('/api/resources', async (req, res) => {
   try {
     // Log database connection info
     const dbUrl = process.env.POSTGRES_PRISMA_URL;
-    console.log(`[Resources API] Database URL set:`, dbUrl ? 'Yes' : 'No');
-    console.log(`[Resources API] Database URL preview:`, dbUrl ? dbUrl.substring(0, 50) + '...' : 'Not set');
-    console.log(`[Resources API] NODE_ENV:`, process.env.NODE_ENV);
+    const directUrl = process.env.POSTGRES_URL_NON_POOLING;
+    console.log(`[Resources API] Environment check:`);
+    console.log(`  - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+    console.log(`  - POSTGRES_PRISMA_URL: ${dbUrl ? 'Set (' + dbUrl.substring(0, 30) + '...)' : 'NOT SET'}`);
+    console.log(`  - POSTGRES_URL_NON_POOLING: ${directUrl ? 'Set' : 'NOT SET'}`);
+    
+    // Verify Prisma is using the correct connection
+    const prismaUrl = (prisma as any)._engine?.connectionString || 'unknown';
+    console.log(`  - Prisma connection: ${prismaUrl.substring(0, 50)}...`);
     
     // First, check if we can connect and count
     const count = await prisma.resourceCategory.count();
