@@ -1386,18 +1386,29 @@ app.get('/api/resources', async (req, res) => {
     // Log database connection info
     const dbUrl = process.env.POSTGRES_PRISMA_URL;
     const directUrl = process.env.POSTGRES_URL_NON_POOLING;
-    console.log(`[Resources API] Environment check:`);
+    console.log(`[Resources API] ===== Database Connection Check =====`);
     console.log(`  - NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
-    console.log(`  - POSTGRES_PRISMA_URL: ${dbUrl ? 'Set (' + dbUrl.substring(0, 30) + '...)' : 'NOT SET'}`);
-    console.log(`  - POSTGRES_URL_NON_POOLING: ${directUrl ? 'Set' : 'NOT SET'}`);
+    console.log(`  - POSTGRES_PRISMA_URL: ${dbUrl ? 'Set (' + dbUrl.substring(0, 40) + '...)' : 'NOT SET ⚠️'}`);
+    console.log(`  - POSTGRES_URL_NON_POOLING: ${directUrl ? 'Set' : 'NOT SET ⚠️'}`);
     
-    // Verify Prisma is using the correct connection
-    const prismaUrl = (prisma as any)._engine?.connectionString || 'unknown';
-    console.log(`  - Prisma connection: ${prismaUrl.substring(0, 50)}...`);
+    if (!dbUrl) {
+      console.error('[Resources API] ERROR: POSTGRES_PRISMA_URL is not set!');
+      return res.status(500).json({ error: 'Database configuration error' });
+    }
     
     // First, check if we can connect and count
-    const count = await prisma.resourceCategory.count();
-    console.log(`[Resources API] Total categories in database: ${count}`);
+    console.log(`[Resources API] Attempting database connection...`);
+    let count = 0;
+    try {
+      count = await prisma.resourceCategory.count();
+      console.log(`[Resources API] ✓ Connection successful! Total categories: ${count}`);
+    } catch (countError) {
+      console.error('[Resources API] ✗ Database connection failed:', countError);
+      return res.status(500).json({ 
+        error: 'Database connection failed', 
+        details: countError instanceof Error ? countError.message : String(countError) 
+      });
+    }
     
     const resources = await prisma.resourceCategory.findMany({
       include: {
