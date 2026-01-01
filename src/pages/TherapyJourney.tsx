@@ -26,9 +26,20 @@ const TherapyJourney: React.FC = () => {
             console.log('[TherapyJourney] Loading resources...');
             const data = await api.getResources();
             console.log('[TherapyJourney] Resources loaded:', data);
-            setCategories(Array.isArray(data) ? data : []);
+            console.log('[TherapyJourney] Data type:', typeof data);
+            console.log('[TherapyJourney] Is array:', Array.isArray(data));
+            console.log('[TherapyJourney] Data length:', Array.isArray(data) ? data.length : 'not an array');
+            
+            if (Array.isArray(data) && data.length > 0) {
+                console.log('[TherapyJourney] First category:', data[0]);
+                setCategories(data);
+            } else {
+                console.warn('[TherapyJourney] No resources found or invalid data format');
+                setCategories([]);
+            }
         } catch (error) {
             console.error('[TherapyJourney] Failed to load resources:', error);
+            console.error('[TherapyJourney] Error details:', error);
             // Show error to user
             alert(`Failed to load resources: ${error instanceof Error ? error.message : 'Unknown error'}`);
             setCategories([]);
