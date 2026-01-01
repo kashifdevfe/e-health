@@ -1,52 +1,13 @@
 
-import React, { useState, useEffect } from 'react';
-import { api } from '../lib/api';
+import React, { useState } from 'react';
 import TherapySessionPlayer from '../components/TherapySessionPlayer';
 import { Play, BookOpen, Clock, ChevronRight } from 'lucide-react';
-
-interface ResourceCategory {
-    id: string;
-    title: string;
-    description: string;
-    thumbnailUrl: string;
-    items: any[];
-}
+import { therapyResources, ResourceCategory } from '../data/therapyResources';
 
 const TherapyJourney: React.FC = () => {
-    const [categories, setCategories] = useState<ResourceCategory[]>([]);
+    const [categories] = useState<ResourceCategory[]>(therapyResources);
     const [activeSession, setActiveSession] = useState<ResourceCategory | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        loadResources();
-    }, []);
-
-    const loadResources = async () => {
-        try {
-            console.log('[TherapyJourney] Loading resources...');
-            const data = await api.getResources();
-            console.log('[TherapyJourney] Resources loaded:', data);
-            console.log('[TherapyJourney] Data type:', typeof data);
-            console.log('[TherapyJourney] Is array:', Array.isArray(data));
-            console.log('[TherapyJourney] Data length:', Array.isArray(data) ? data.length : 'not an array');
-            
-            if (Array.isArray(data) && data.length > 0) {
-                console.log('[TherapyJourney] First category:', data[0]);
-                setCategories(data);
-            } else {
-                console.warn('[TherapyJourney] No resources found or invalid data format');
-                setCategories([]);
-            }
-        } catch (error) {
-            console.error('[TherapyJourney] Failed to load resources:', error);
-            console.error('[TherapyJourney] Error details:', error);
-            // Show error to user
-            alert(`Failed to load resources: ${error instanceof Error ? error.message : 'Unknown error'}`);
-            setCategories([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    const loading = false; // No loading needed - data is static
 
     if (activeSession) {
         return (
