@@ -5,8 +5,8 @@ CREATE TABLE "profiles" (
     "password" TEXT NOT NULL,
     "full_name" TEXT NOT NULL,
     "user_role" TEXT NOT NULL,
-    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" DATETIME NOT NULL
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP NOT NULL
 );
 
 -- CreateTable
@@ -14,7 +14,7 @@ CREATE TABLE "doctor_patient_assignments" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "doctor_id" TEXT NOT NULL,
     "patient_id" TEXT NOT NULL,
-    "assigned_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "assigned_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "doctor_patient_assignments_doctor_id_fkey" FOREIGN KEY ("doctor_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "doctor_patient_assignments_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -24,7 +24,7 @@ CREATE TABLE "caregiver_patient_assignments" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "caregiver_id" TEXT NOT NULL,
     "patient_id" TEXT NOT NULL,
-    "assigned_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "assigned_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "caregiver_patient_assignments_caregiver_id_fkey" FOREIGN KEY ("caregiver_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "caregiver_patient_assignments_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -60,8 +60,8 @@ CREATE TABLE "patient_demographics" (
     "travelling_expenditure" REAL,
     "parents_cousins" BOOLEAN NOT NULL DEFAULT false,
     "cousin_relation" TEXT,
-    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" DATETIME NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP NOT NULL,
     CONSTRAINT "patient_demographics_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -79,7 +79,7 @@ CREATE TABLE "gad7_assessments" (
     "total_score" INTEGER NOT NULL,
     "severity_level" TEXT NOT NULL,
     "color_code" TEXT NOT NULL,
-    "completed_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completed_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "gad7_assessments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -100,7 +100,7 @@ CREATE TABLE "phq9_assessments" (
     "severity_level" TEXT NOT NULL,
     "color_code" TEXT NOT NULL,
     "functional_impact" TEXT,
-    "completed_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completed_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "phq9_assessments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -138,7 +138,7 @@ CREATE TABLE "dass21_assessments" (
     "depression_color" TEXT NOT NULL,
     "anxiety_color" TEXT NOT NULL,
     "stress_color" TEXT NOT NULL,
-    "completed_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completed_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "dass21_assessments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -168,7 +168,7 @@ CREATE TABLE "cvd_assessments" (
     "q10_color" TEXT NOT NULL,
     "overall_risk" TEXT NOT NULL,
     "overall_color" TEXT NOT NULL,
-    "completed_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "completed_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "cvd_assessments_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 

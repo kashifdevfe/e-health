@@ -9,11 +9,11 @@ CREATE TABLE "treatment_plans" (
     "medications" TEXT,
     "exercises" TEXT,
     "diet_plan" TEXT,
-    "start_date" DATETIME NOT NULL,
-    "end_date" DATETIME,
+    "start_date" TIMESTAMP NOT NULL,
+    "end_date" TIMESTAMP,
     "status" TEXT NOT NULL,
-    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" DATETIME NOT NULL,
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP NOT NULL,
     CONSTRAINT "treatment_plans_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "treatment_plans_doctor_id_fkey" FOREIGN KEY ("doctor_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -26,10 +26,10 @@ CREATE TABLE "medications" (
     "dosage" TEXT NOT NULL,
     "frequency" TEXT NOT NULL,
     "time" TEXT NOT NULL,
-    "start_date" DATETIME NOT NULL,
-    "end_date" DATETIME,
+    "start_date" TIMESTAMP NOT NULL,
+    "end_date" TIMESTAMP,
     "notes" TEXT,
-    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT "medications_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -43,7 +43,7 @@ CREATE TABLE "vital_signs" (
     "temperature" REAL,
     "oxygen_level" INTEGER,
     "weight" REAL,
-    "recorded_at" DATETIME NOT NULL,
+    "recorded_at" TIMESTAMP NOT NULL,
     "notes" TEXT,
     CONSTRAINT "vital_signs_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "vital_signs_caregiver_id_fkey" FOREIGN KEY ("caregiver_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
@@ -59,7 +59,7 @@ CREATE TABLE "nutrition_logs" (
     "protein" REAL,
     "carbs" REAL,
     "fats" REAL,
-    "recorded_at" DATETIME NOT NULL,
+    "recorded_at" TIMESTAMP NOT NULL,
     "notes" TEXT,
     CONSTRAINT "nutrition_logs_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -72,7 +72,7 @@ CREATE TABLE "exercise_logs" (
     "duration" INTEGER NOT NULL,
     "intensity" TEXT NOT NULL,
     "calories_burned" INTEGER,
-    "recorded_at" DATETIME NOT NULL,
+    "recorded_at" TIMESTAMP NOT NULL,
     "notes" TEXT,
     CONSTRAINT "exercise_logs_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -85,7 +85,7 @@ CREATE TABLE "emergency_alerts" (
     "severity" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "status" TEXT NOT NULL,
-    "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "resolved_at" DATETIME,
+    "created_at" TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "resolved_at" TIMESTAMP,
     CONSTRAINT "emergency_alerts_patient_id_fkey" FOREIGN KEY ("patient_id") REFERENCES "profiles" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
