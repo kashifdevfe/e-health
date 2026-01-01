@@ -1405,9 +1405,16 @@ app.get('/api/resources', async (req, res) => {
     // Explicitly serialize to ensure proper JSON response
     const serialized = JSON.parse(JSON.stringify(resources));
     console.log(`[Resources API] Serialized length: ${serialized.length}`);
+    console.log(`[Resources API] Serialized first item:`, serialized[0] ? {
+      id: serialized[0].id,
+      title: serialized[0].title,
+      itemsCount: serialized[0].items?.length
+    } : 'none');
     console.log(`[Resources API] Sending response with ${serialized.length} categories`);
     
-    res.json(serialized);
+    // Set explicit content type and send
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json(serialized);
   } catch (error) {
     console.error('Get resources error:', error);
     res.status(500).json({ error: 'Internal server error', details: error instanceof Error ? error.message : String(error) });
