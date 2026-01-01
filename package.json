@@ -12,6 +12,8 @@
     "start": "tsx server/index.ts",
     "postinstall": "prisma generate",
     "migrate:deploy": "prisma migrate deploy",
+    "vercel-build": "prisma generate && npm run build",
+    "seed": "cd prisma && npx tsx seed_resources.ts",
     "lint": "eslint .",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
