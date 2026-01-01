@@ -1380,7 +1380,8 @@ app.get('/api/patient/care-activities', authenticateToken, getPatientCareActivit
 app.get('/api/doctor/patient/:patientId/progress', authenticateToken, getDoctorPatientProgress);
 app.get('/api/caregiver/patient/:patientId/progress', authenticateToken, getCaregiverPatientProgress);
 
-app.get('/api/resources', authenticateToken, async (req, res) => {
+// Resources endpoint - public access for educational content
+app.get('/api/resources', async (req, res) => {
   try {
     const resources = await prisma.resourceCategory.findMany({
       include: {
