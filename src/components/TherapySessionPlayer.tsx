@@ -236,45 +236,104 @@ const TherapySessionPlayer: React.FC<TherapySessionPlayerProps> = ({ items, onCo
         autoStartRef.current = false;
     }, [currentItem?.id]);
 
+    // Auto-start speech when component mounts or item changes
     useEffect(() => {
-        // Auto-start speech when item changes or component mounts
-        if (!currentItem?.content || voices.length === 0) {
+        // Don't start if no content
+        if (!currentItem?.content) {
+            console.log('[Auto-start] No content available');
             return;
         }
 
         // If already speaking, don't interrupt
         if (speaking) {
+            console.log('[Auto-start] Already speaking, skipping');
             return;
         }
 
         // Mark as attempted to prevent duplicate calls
         if (autoStartRef.current) {
+            console.log('[Auto-start] Already attempted for this item');
             return;
         }
-        autoStartRef.current = true;
-        setAutoStartAttempted(true);
 
-        // Start speech immediately - small delay to ensure everything is ready
-        const timer = setTimeout(() => {
+        const startSpeech = () => {
             // Double-check conditions before starting
-            if (currentItem?.content && !speaking && voices.length > 0) {
-                console.log('Auto-starting speech immediately...', {
-                    voices: voices.length,
-                    selectedVoice: selectedVoice?.name,
-                    contentLength: currentItem.content.length,
-                });
-                const processedContent = processTextForSpeech(currentItem.content);
-                speak(processedContent, {
-                    rate: speechRate,
-                    pitch: speechPitch,
-                    volume: 0.95,
-                    voice: selectedVoice,
-                });
+            if (!currentItem?.content) {
+                console.log('[Auto-start] No content in startSpeech');
+                return;
             }
-        }, 300);
 
-        return () => clearTimeout(timer);
-        // Only depend on item ID and voices - not on speaking state to avoid re-triggering
+            // Check if already speaking (might have changed)
+            if (speaking) {
+                console.log('[Auto-start] Already speaking, aborting startSpeech');
+                return;
+            }
+
+            console.log('[Auto-start] Starting speech...', {
+                voices: voices.length,
+                selectedVoice: selectedVoice?.name || 'default',
+                contentLength: currentItem.content.length,
+                hasContent: !!currentItem.content,
+            });
+
+            const processedContent = processTextForSpeech(currentItem.content);
+            
+            // Mark as attempted
+            autoStartRef.current = true;
+            setAutoStartAttempted(true);
+
+            // Start speech - voice will be selected automatically if not set
+            speak(processedContent, {
+                rate: speechRate,
+                pitch: speechPitch,
+                volume: 0.95,
+                voice: selectedVoice || undefined, // Can be undefined, will use default
+            });
+        };
+
+        // Try to start immediately, but also wait for voices if needed
+        const tryStart = () => {
+            // Check voices directly from window.speechSynthesis
+            const synth = window.speechSynthesis;
+            const currentVoices = synth?.getVoices() || [];
+            
+            if (currentVoices.length > 0 || voices.length > 0) {
+                console.log('[Auto-start] Voices available, starting in 200ms');
+                const timer = setTimeout(() => {
+                    startSpeech();
+                }, 200);
+                return () => clearTimeout(timer);
+            } else {
+                console.log('[Auto-start] Waiting for voices to load...');
+                // Wait for voices to load, but don't wait forever
+                let attempts = 0;
+                const maxAttempts = 30; // 3 seconds max wait
+                const checkVoices = setInterval(() => {
+                    attempts++;
+                    const synth = window.speechSynthesis;
+                    const currentVoices = synth?.getVoices() || [];
+                    console.log(`[Auto-start] Checking voices (attempt ${attempts}/${maxAttempts}):`, currentVoices.length);
+                    
+                    if (currentVoices.length > 0 || attempts >= maxAttempts) {
+                        clearInterval(checkVoices);
+                        if (currentVoices.length > 0) {
+                            console.log('[Auto-start] Voices loaded, starting speech');
+                            startSpeech();
+                        } else {
+                            // Start anyway with default voice
+                            console.warn('[Auto-start] Voices not loaded after timeout, starting with default voice');
+                            startSpeech();
+                        }
+                    }
+                }, 100);
+
+                return () => clearInterval(checkVoices);
+            }
+        };
+
+        return tryStart();
+        // Note: We intentionally don't include 'speaking' in dependencies to avoid re-triggering
+        // when speech state changes. We only want to auto-start when item changes.
     }, [currentItem?.id, currentItem?.content, voices.length, selectedVoice, speak, speechRate, speechPitch]);
 
     // Ensure background music is playing independently
