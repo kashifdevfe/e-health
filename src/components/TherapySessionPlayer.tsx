@@ -230,86 +230,70 @@ const TherapySessionPlayer: React.FC<TherapySessionPlayerProps> = ({ items, onCo
         }
     }, [voices, selectedVoice, setVoice]);
 
-    // Auto-start functionality with user interaction workaround
+    // Auto-start functionality - improved to start immediately
     useEffect(() => {
         // Reset auto-start ref when item changes
-        if (autoStartRef.current) {
-            autoStartRef.current = false;
-        }
+        autoStartRef.current = false;
     }, [currentItem?.id]);
 
     useEffect(() => {
-        // Only try once per item - use ref to prevent multiple calls
-        if (autoStartRef.current || !currentItem?.content || voices.length === 0 || speaking) {
+        // Auto-start speech when item changes or component mounts
+        if (!currentItem?.content || voices.length === 0) {
             return;
         }
 
-        // Mark as attempted immediately to prevent re-runs
+        // If already speaking, don't interrupt
+        if (speaking) {
+            return;
+        }
+
+        // Mark as attempted to prevent duplicate calls
+        if (autoStartRef.current) {
+            return;
+        }
         autoStartRef.current = true;
         setAutoStartAttempted(true);
 
-        // Faster start if user has already interacted, otherwise standard delay
-        const delay = hasUserInteracted ? 500 : 1500;
-
-        // Small delay to ensure everything is ready
+        // Start speech immediately - small delay to ensure everything is ready
         const timer = setTimeout(() => {
+            // Double-check conditions before starting
             if (currentItem?.content && !speaking && voices.length > 0) {
-                console.log('Auto-starting speech (single attempt)...', {
+                console.log('Auto-starting speech immediately...', {
                     voices: voices.length,
                     selectedVoice: selectedVoice?.name,
                     contentLength: currentItem.content.length,
-                    hasInteracted: hasUserInteracted
                 });
                 const processedContent = processTextForSpeech(currentItem.content);
                 speak(processedContent, {
-                    rate: speechRate, // User-adjustable rate (default: sleepy/slow)
-                    pitch: speechPitch, // Lower pitch for elderly, powerful voice
-                    volume: 0.95, // Powerful but calming
-                    voice: selectedVoice, // Always use Google UK English Male
+                    rate: speechRate,
+                    pitch: speechPitch,
+                    volume: 0.95,
+                    voice: selectedVoice,
                 });
             }
-        }, delay);
+        }, 300);
 
-        // Ensure background music is playing and looping for all exercises
-        if (isBgMusicPlaying && bgAudioRef.current) {
-            // Ensure loop is enabled
-            bgAudioRef.current.loop = true;
-            bgAudioRef.current.volume = 0.15; // Lower volume for subtle background
-            console.log('Attempting to play background music on mount...', BG_MUSIC_URL);
-            bgAudioRef.current.play().catch(e => {
-                // Only log if it's not a user interaction or source error
-                if (e.name !== 'NotAllowedError' && e.name !== 'NotSupportedError') {
-                    console.warn("Audio play failed:", e.name, e);
-                } else {
-                    console.log('Auto-play prevented (normal), will play on user interaction');
-                }
-            });
-        }
+        return () => clearTimeout(timer);
+        // Only depend on item ID and voices - not on speaking state to avoid re-triggering
+    }, [currentItem?.id, currentItem?.content, voices.length, selectedVoice, speak, speechRate, speechPitch]);
 
-        return () => {
-            clearTimeout(timer);
-        };
-    }, [currentItem?.id, voices.length]); // Only depend on item ID and voices length
-
+    // Ensure background music is playing independently
     useEffect(() => {
-        // Handle play/pause toggle during session
-        if (bgAudioRef.current) {
-            if (isBgMusicPlaying) {
-                // Ensure loop is enabled
-                bgAudioRef.current.loop = true;
-                bgAudioRef.current.volume = 0.15; // Lower volume for subtle background
-                console.log('Playing background music (toggle)...', BG_MUSIC_URL);
+        if (isBgMusicPlaying && bgAudioRef.current) {
+            bgAudioRef.current.loop = true;
+            bgAudioRef.current.volume = 0.15;
+            if (bgAudioRef.current.paused) {
                 bgAudioRef.current.play().catch(e => {
-                    // Only log if it's not a user interaction or source error
                     if (e.name !== 'NotAllowedError' && e.name !== 'NotSupportedError') {
                         console.warn("Audio play failed:", e.name, e);
                     }
                 });
-            } else {
-                bgAudioRef.current.pause();
             }
         }
     }, [isBgMusicPlaying]);
+
+    // Background music is now handled in a separate effect above
+    // This ensures it doesn't interfere with speech synthesis
 
     useEffect(() => {
         // Cleanup on unmount
@@ -333,17 +317,10 @@ const TherapySessionPlayer: React.FC<TherapySessionPlayerProps> = ({ items, onCo
         setAutoStartAttempted(false);
         setSpeechError(null); // Clear any previous errors
 
-        // Ensure background music continues playing and looping when moving to next exercise
-        if (isBgMusicPlaying && bgAudioRef.current) {
-            bgAudioRef.current.loop = true;
-            // If paused, resume playing
-            if (bgAudioRef.current.paused) {
-                bgAudioRef.current.play().catch(() => { });
-            }
-        }
+        // Background music is handled independently in its own effect
+        // Don't control it here to avoid interfering with speech
 
-        // Don't auto-play here - let the auto-start effect handle it
-        // This prevents double-calling
+        // Auto-start will be handled by the dedicated auto-start effect
     }, [currentIndex, currentItem?.id, cancel, stopListening]);
 
     const handlePlayPause = () => {
@@ -354,12 +331,10 @@ const TherapySessionPlayer: React.FC<TherapySessionPlayerProps> = ({ items, onCo
         if (speaking) {
             if (paused) {
                 resume();
-                if (isBgMusicPlaying && bgAudioRef.current) {
-                    bgAudioRef.current.play().catch(() => { });
-                }
+                // Don't control background music here - it's independent
             } else {
                 pause();
-                if (bgAudioRef.current) bgAudioRef.current.pause();
+                // Don't pause background music - it should continue independently
             }
         } else {
             const textToSpeak = currentText || processTextForSpeech(currentItem?.content || '');
@@ -375,9 +350,7 @@ const TherapySessionPlayer: React.FC<TherapySessionPlayerProps> = ({ items, onCo
                     volume: 0.95, // Powerful but calming
                     voice: selectedVoice, // Always use Google UK English Male
                 });
-                if (isBgMusicPlaying && bgAudioRef.current) {
-                    bgAudioRef.current.play().catch(() => { });
-                }
+                // Background music is handled independently - don't control it here
             }
         }
     };
@@ -399,7 +372,9 @@ const TherapySessionPlayer: React.FC<TherapySessionPlayerProps> = ({ items, onCo
     };
 
     const toggleBgMusic = () => {
+        // Only toggle background music - don't affect speech at all
         setIsBgMusicPlaying(!isBgMusicPlaying);
+        // Speech continues regardless of background music state
     };
 
     return (
